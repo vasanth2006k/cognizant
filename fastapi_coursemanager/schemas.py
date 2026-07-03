@@ -1,9 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import date
 
 
-# ---------------- Department ----------------
+# ======================================
+# Department Schemas
+# ======================================
 
 class DepartmentBase(BaseModel):
     dept_name: str
@@ -22,7 +24,9 @@ class DepartmentResponse(DepartmentBase):
         from_attributes = True
 
 
-# ---------------- Course ----------------
+# ======================================
+# Course Schemas
+# ======================================
 
 class CourseBase(BaseModel):
     course_name: str
@@ -49,12 +53,14 @@ class CourseResponse(CourseBase):
         from_attributes = True
 
 
-# ---------------- Student ----------------
+# ======================================
+# Student Schemas
+# ======================================
 
 class StudentBase(BaseModel):
     first_name: str
     last_name: str
-    email: str
+    email: EmailStr
     enrollment_year: int
     department_id: int
 
@@ -66,7 +72,7 @@ class StudentCreate(StudentBase):
 class StudentUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    email: Optional[str] = None
+    email: Optional[EmailStr] = None
     enrollment_year: Optional[int] = None
     department_id: Optional[int] = None
 
@@ -78,7 +84,9 @@ class StudentResponse(StudentBase):
         from_attributes = True
 
 
-# ---------------- Enrollment ----------------
+# ======================================
+# Enrollment Schemas
+# ======================================
 
 class EnrollmentBase(BaseModel):
     student_id: int
@@ -96,3 +104,39 @@ class EnrollmentResponse(EnrollmentBase):
 
     class Config:
         from_attributes = True
+
+
+# ======================================
+# User Registration (Hands-On 9)
+# ======================================
+
+class UserRegister(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class UserResponse(BaseModel):
+    id: int
+    email: EmailStr
+    is_active: int
+
+    class Config:
+        from_attributes = True
+
+
+# ======================================
+# JWT Token Schemas
+# ======================================
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    email: Optional[str] = None

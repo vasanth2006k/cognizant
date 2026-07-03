@@ -1,42 +1,36 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from database import get_db
 from models import Student
 from schemas import StudentCreate, StudentUpdate, StudentResponse
+from security import get_current_user
 
 router = APIRouter(
-    prefix="/api/students",
+    prefix="/api/v1/students",
     tags=["Students"]
 )
 
 
-# ------------------------------------
-# Get All Students
-# ------------------------------------
+# ======================================
+# GET ALL STUDENTS (Public)
+# ======================================
 @router.get("/", response_model=list[StudentResponse])
-async def get_students(db: AsyncSession = Depends(get_db)):
-
-    result = await db.execute(select(Student))
-
-    return result.scalars().all()
+def get_students(db: Session = Depends(get_db)):
+    return db.query(Student).all()
 
 
-# ------------------------------------
-# Get Student By ID
-# ------------------------------------
+# ======================================
+# GET STUDENT BY ID (Public)
+# ======================================
 @router.get("/{student_id}", response_model=StudentResponse)
-async def get_student(student_id: int,
-                      db: AsyncSession = Depends(get_db)):
+def get_student(student_id: int, db: Session = Depends(get_db)):
 
-    result = await db.execute(
-        select(Student).where(Student.id == student_id)
-    )
+    student = db.query(Student).filter(
+        Student.id == student_id
+    ).first()
 
-    student = result.scalar_one_or_none()
-
-    if student is None:
+    if not student:
         raise HTTPException(
             status_code=404,
             detail="Student not found"
@@ -45,16 +39,19 @@ async def get_student(student_id: int,
     return student
 
 
-# ------------------------------------
-# Add Student
-# ------------------------------------
+# ======================================
+# CREATE STUDENT (Protected)
+# ======================================
 @router.post(
     "/",
     response_model=StudentResponse,
     status_code=status.HTTP_201_CREATED
 )
-async def create_student(student: StudentCreate,
-                         db: AsyncSession = Depends(get_db)):
+def create_student(
+    student: StudentCreate,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
 
     new_student = Student(
         first_name=student.first_name,
@@ -65,69 +62,66 @@ async def create_student(student: StudentCreate,
     )
 
     db.add(new_student)
-
-    await db.commit()
-
-    await db.refresh(new_student)
+    db.commit()
+    db.refresh(new_student)
 
     return new_student
 
 
-# ------------------------------------
-# Update Student
-# ------------------------------------
-@router.put("/{student_id}",
-            response_model=StudentResponse)
-async def update_student(student_id: int,
-                         data: StudentUpdate,
-                         db: AsyncSession = Depends(get_db)):
+# ======================================
+# UPDATE STUDENT (Protected)
+# ======================================
+@router.put("/{student_id}", response_model=StudentResponse)
+def update_student(
+    student_id: int,
+    student_data: StudentUpdate,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
 
-    result = await db.execute(
-        select(Student).where(Student.id == student_id)
-    )
+    student = db.query(Student).filter(
+        Student.id == student_id
+    ).first()
 
-    student = result.scalar_one_or_none()
-
-    if student is None:
+    if not student:
         raise HTTPException(
             status_code=404,
             detail="Student not found"
         )
 
-    update_data = data.model_dump(exclude_unset=True)
+    update_data = student_data.model_dump(exclude_unset=True)
 
     for key, value in update_data.items():
         setattr(student, key, value)
 
-    await db.commit()
-
-    await db.refresh(student)
+    db.commit()
+    db.refresh(student)
 
     return student
 
 
-# ------------------------------------
-# Delete Student
-# ------------------------------------
+# ======================================
+# DELETE STUDENT (Protected)
+# ======================================
 @router.delete("/{student_id}")
-async def delete_student(student_id: int,
-                         db: AsyncSession = Depends(get_db)):
+def delete_student(
+    student_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
 
-    result = await db.execute(
-        select(Student).where(Student.id == student_id)
-    )
+    student = db.query(Student).filter(
+        Student.id == student_id
+    ).first()
 
-    student = result.scalar_one_or_none()
-
-    if student is None:
+    if not student:
         raise HTTPException(
             status_code=404,
             detail="Student not found"
         )
 
-    await db.delete(student)
-
-    await db.commit()
+    db.delete(student)
+    db.commit()
 
     return {
         "message": "Student deleted successfully"

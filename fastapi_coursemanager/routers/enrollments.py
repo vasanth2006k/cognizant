@@ -1,44 +1,37 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from database import get_db
-from models import Enrollment, Student, Course
+from models import Enrollment
 from schemas import EnrollmentCreate, EnrollmentResponse
+from security import get_current_user
 
 router = APIRouter(
-    prefix="/api/enrollments",
+    prefix="/api/v1/enrollments",
     tags=["Enrollments"]
 )
 
 
-# -----------------------------------
-# Get All Enrollments
-# -----------------------------------
+# ======================================
+# GET ALL ENROLLMENTS (Public)
+# ======================================
 @router.get("/", response_model=list[EnrollmentResponse])
-async def get_enrollments(db: AsyncSession = Depends(get_db)):
-
-    result = await db.execute(select(Enrollment))
-
-    return result.scalars().all()
+def get_enrollments(db: Session = Depends(get_db)):
+    return db.query(Enrollment).all()
 
 
-# -----------------------------------
-# Get Enrollment By ID
-# -----------------------------------
+# ======================================
+# GET ENROLLMENT BY ID (Public)
+# ======================================
 @router.get("/{enrollment_id}", response_model=EnrollmentResponse)
-async def get_enrollment(
-        enrollment_id: int,
-        db: AsyncSession = Depends(get_db)
+def get_enrollment(
+    enrollment_id: int,
+    db: Session = Depends(get_db)
 ):
 
-    result = await db.execute(
-        select(Enrollment).where(
-            Enrollment.id == enrollment_id
-        )
-    )
-
-    enrollment = result.scalar_one_or_none()
+    enrollment = db.query(Enrollment).filter(
+        Enrollment.id == enrollment_id
+    ).first()
 
     if enrollment is None:
         raise HTTPException(
@@ -49,34 +42,19 @@ async def get_enrollment(
     return enrollment
 
 
-# -----------------------------------
-# Create Enrollment
-# -----------------------------------
+# ======================================
+# CREATE ENROLLMENT (Protected)
+# ======================================
 @router.post(
     "/",
     response_model=EnrollmentResponse,
     status_code=status.HTTP_201_CREATED
 )
-async def create_enrollment(
-        enrollment: EnrollmentCreate,
-        db: AsyncSession = Depends(get_db)
+def create_enrollment(
+    enrollment: EnrollmentCreate,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
 ):
-
-    student = await db.get(Student, enrollment.student_id)
-
-    if student is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Student not found"
-        )
-
-    course = await db.get(Course, enrollment.course_id)
-
-    if course is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Course not found"
-        )
 
     new_enrollment = Enrollment(
         student_id=enrollment.student_id,
@@ -86,27 +64,26 @@ async def create_enrollment(
     )
 
     db.add(new_enrollment)
-
-    await db.commit()
-
-    await db.refresh(new_enrollment)
+    db.commit()
+    db.refresh(new_enrollment)
 
     return new_enrollment
 
 
-# -----------------------------------
-# Delete Enrollment
-# -----------------------------------
-@router.delete("/{enrollment_id}")
-async def delete_enrollment(
-        enrollment_id: int,
-        db: AsyncSession = Depends(get_db)
+# ======================================
+# UPDATE ENROLLMENT (Protected)
+# ======================================
+@router.put("/{enrollment_id}", response_model=EnrollmentResponse)
+def update_enrollment(
+    enrollment_id: int,
+    enrollment_data: EnrollmentCreate,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
 ):
 
-    enrollment = await db.get(
-        Enrollment,
-        enrollment_id
-    )
+    enrollment = db.query(Enrollment).filter(
+        Enrollment.id == enrollment_id
+    ).first()
 
     if enrollment is None:
         raise HTTPException(
@@ -114,9 +91,39 @@ async def delete_enrollment(
             detail="Enrollment not found"
         )
 
-    await db.delete(enrollment)
+    enrollment.student_id = enrollment_data.student_id
+    enrollment.course_id = enrollment_data.course_id
+    enrollment.enrollment_date = enrollment_data.enrollment_date
+    enrollment.grade = enrollment_data.grade
 
-    await db.commit()
+    db.commit()
+    db.refresh(enrollment)
+
+    return enrollment
+
+
+# ======================================
+# DELETE ENROLLMENT (Protected)
+# ======================================
+@router.delete("/{enrollment_id}")
+def delete_enrollment(
+    enrollment_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+
+    enrollment = db.query(Enrollment).filter(
+        Enrollment.id == enrollment_id
+    ).first()
+
+    if enrollment is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Enrollment not found"
+        )
+
+    db.delete(enrollment)
+    db.commit()
 
     return {
         "message": "Enrollment deleted successfully"

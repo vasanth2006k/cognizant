@@ -1,10 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
 
 from database import get_db
 from models import Course
 from schemas import CourseCreate, CourseUpdate, CourseResponse
+from security import get_current_user
 
 router = APIRouter(
     prefix="/api/v1/courses",
@@ -12,100 +12,45 @@ router = APIRouter(
 )
 
 
-# -----------------------------
-# GET ALL COURSES
-# Pagination + Search
-# -----------------------------
-@router.get("/")
-async def get_courses(
-    page: int = 1,
-    page_size: int = 2,
-    search: str | None = None,
-    db: AsyncSession = Depends(get_db)
-):
-
-    query = select(Course)
-
-    if search:
-        query = query.where(
-            or_(
-                Course.course_name.ilike(f"%{search}%"),
-                Course.course_code.ilike(f"%{search}%")
-            )
-        )
-
-    total = len(
-        (
-            await db.execute(query)
-        ).scalars().all()
-    )
-
-    offset = (page - 1) * page_size
-
-    result = await db.execute(
-        query.offset(offset).limit(page_size)
-    )
-
-    courses = result.scalars().all()
-
-    next_page = None
-    previous_page = None
-
-    if offset + page_size < total:
-        next_page = f"/api/v1/courses?page={page+1}&page_size={page_size}"
-
-    if page > 1:
-        previous_page = f"/api/v1/courses?page={page-1}&page_size={page_size}"
-
-    return {
-        "count": total,
-        "next": next_page,
-        "previous": previous_page,
-        "results": courses
-    }
+# =====================================
+# GET ALL COURSES (Public)
+# =====================================
+@router.get("/", response_model=list[CourseResponse])
+def get_courses(db: Session = Depends(get_db)):
+    return db.query(Course).all()
 
 
-# -----------------------------
-# GET COURSE BY ID
-# -----------------------------
-@router.get(
-    "/{course_id}",
-    response_model=CourseResponse
-)
-async def get_course(
-    course_id: int,
-    db: AsyncSession = Depends(get_db)
-):
+# =====================================
+# GET COURSE BY ID (Public)
+# =====================================
+@router.get("/{course_id}", response_model=CourseResponse)
+def get_course(course_id: int, db: Session = Depends(get_db)):
 
-    course = await db.get(Course, course_id)
+    course = db.query(Course).filter(
+        Course.id == course_id
+    ).first()
 
-    if course is None:
+    if not course:
         raise HTTPException(
             status_code=404,
-            detail={
-                "error": {
-                    "code": "NOT_FOUND",
-                    "message": f"Course with id {course_id} does not exist",
-                    "field": None
-                }
-            }
+            detail="Course not found"
         )
 
     return course
 
 
-# -----------------------------
-# CREATE COURSE
-# -----------------------------
+# =====================================
+# CREATE COURSE (Protected)
+# =====================================
 @router.post(
     "/",
     response_model=CourseResponse,
     status_code=status.HTTP_201_CREATED
 )
-async def create_course(
+def create_course(
     course: CourseCreate,
-    response: Response,
-    db: AsyncSession = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
 ):
 
     new_course = Course(
@@ -116,106 +61,67 @@ async def create_course(
     )
 
     db.add(new_course)
-
-    await db.commit()
-
-    await db.refresh(new_course)
-
-    response.headers["Location"] = f"/api/v1/courses/{new_course.id}"
+    db.commit()
+    db.refresh(new_course)
 
     return new_course
 
 
-# -----------------------------
-# PUT
-# Replace entire object
-# -----------------------------
-@router.put(
-    "/{course_id}",
-    response_model=CourseResponse
-)
-async def update_course(
+# =====================================
+# UPDATE COURSE (Protected)
+# =====================================
+@router.put("/{course_id}", response_model=CourseResponse)
+def update_course(
     course_id: int,
-    course: CourseCreate,
-    db: AsyncSession = Depends(get_db)
+    updated_course: CourseUpdate,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
 ):
 
-    db_course = await db.get(Course, course_id)
+    course = db.query(Course).filter(
+        Course.id == course_id
+    ).first()
 
-    if db_course is None:
+    if not course:
         raise HTTPException(
             status_code=404,
             detail="Course not found"
         )
 
-    db_course.course_name = course.course_name
-    db_course.course_code = course.course_code
-    db_course.credits = course.credits
-    db_course.department_id = course.department_id
-
-    await db.commit()
-
-    await db.refresh(db_course)
-
-    return db_course
-
-
-# -----------------------------
-# PATCH
-# Partial Update
-# -----------------------------
-@router.patch(
-    "/{course_id}",
-    response_model=CourseResponse
-)
-async def patch_course(
-    course_id: int,
-    course: CourseUpdate,
-    db: AsyncSession = Depends(get_db)
-):
-
-    db_course = await db.get(Course, course_id)
-
-    if db_course is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Course not found"
-        )
-
-    update_data = course.model_dump(exclude_unset=True)
+    update_data = updated_course.model_dump(exclude_unset=True)
 
     for key, value in update_data.items():
-        setattr(db_course, key, value)
+        setattr(course, key, value)
 
-    await db.commit()
+    db.commit()
+    db.refresh(course)
 
-    await db.refresh(db_course)
-
-    return db_course
+    return course
 
 
-# -----------------------------
-# DELETE
-# -----------------------------
-@router.delete(
-    "/{course_id}",
-    status_code=status.HTTP_204_NO_CONTENT
-)
-async def delete_course(
+# =====================================
+# DELETE COURSE (Protected)
+# =====================================
+@router.delete("/{course_id}")
+def delete_course(
     course_id: int,
-    db: AsyncSession = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
 ):
 
-    course = await db.get(Course, course_id)
+    course = db.query(Course).filter(
+        Course.id == course_id
+    ).first()
 
-    if course is None:
+    if not course:
         raise HTTPException(
             status_code=404,
             detail="Course not found"
         )
 
-    await db.delete(course)
+    db.delete(course)
+    db.commit()
 
-    await db.commit()
-
-    return None
+    return {
+        "message": "Course deleted successfully"
+    }

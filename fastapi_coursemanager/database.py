@@ -1,27 +1,26 @@
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = (
-    "mysql+aiomysql://root:vasanth%402006@localhost/flask_course_db"
-)
+DATABASE_URL = "mysql+pymysql://root:vasanth%402006@localhost/flask_course_db"
 
-engine = create_async_engine(
+engine = create_engine(
     DATABASE_URL,
     echo=True
 )
 
-AsyncSessionLocal = sessionmaker(
-    bind=engine,
-    class_=AsyncSession,
-    expire_on_commit=False
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
 )
 
 Base = declarative_base()
 
 
-async def get_db():
-
-    async with AsyncSessionLocal() as session:
-        yield session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
