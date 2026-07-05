@@ -11,54 +11,84 @@
 
 <body>
 
-    <header>
+<header>
 
-        <h1>Student Portal</h1>
+    <h1>Student Portal</h1>
 
-        <nav>
+    <nav>
 
-            <ul>
+        <ul>
 
-                <li><a href="#">Home</a></li>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Courses</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Grades</a></li>
 
-                <li><a href="#">Courses</a></li>
+        </ul>
 
-                <li><a href="#">Profile</a></li>
+    </nav>
 
-                <li><a href="#">Grades</a></li>
+</header>
 
-            </ul>
+<main>
 
-        </nav>
+    <!-- Hero Section -->
 
-    </header>
+    <section id="hero">
 
-    <main>
+        <h2>Welcome to the Student Portal</h2>
 
-        <section id="hero">
+        <p>
+            Explore available courses and monitor your academic progress.
+        </p>
 
-            <h1>Welcome to the Student Portal</h1>
+        <button>Explore Courses</button>
 
-            <p>
-                Explore available courses, monitor your progress,
-                and stay connected with your academic journey.
-            </p>
+    </section>
 
-            <button>Explore Courses</button>
+    <!-- Student Stats -->
 
-        </section>
+    <section class="stats">
 
-        <section id="courses">
+        <div class="stat-box">
 
-            <h2>Available Courses</h2>
+            <h3>Courses</h3>
+
+            <p>5</p>
+
+        </div>
+
+        <div class="stat-box">
+
+            <h3>GPA</h3>
+
+            <p>3.8</p>
+
+        </div>
+
+        <div class="stat-box">
+
+            <h3>Semester</h3>
+
+            <p>6</p>
+
+        </div>
+
+    </section>
+
+    <!-- Courses -->
+
+    <section id="courses">
+
+        <h2>Available Courses</h2>
+
+        <div class="course-grid">
 
             <article class="course-card">
 
                 <h3>Python Programming</h3>
 
-                <p>
-                    Learn Python programming from basics to advanced concepts.
-                </p>
+                <p>Learn Python from beginner to advanced level.</p>
 
                 <span>Credits : 4</span>
 
@@ -68,9 +98,7 @@
 
                 <h3>Web Development</h3>
 
-                <p>
-                    Build responsive websites using HTML, CSS and JavaScript.
-                </p>
+                <p>Build websites using HTML, CSS and JavaScript.</p>
 
                 <span>Credits : 3</span>
 
@@ -80,26 +108,43 @@
 
                 <h3>Database Management</h3>
 
-                <p>
-                    Understand SQL, database design and data management.
-                </p>
+                <p>Learn SQL, ER diagrams and database design.</p>
 
                 <span>Credits : 4</span>
 
             </article>
 
-        </section>
+            <article class="course-card">
 
-    </main>
+                <h3>Java Programming</h3>
 
-    <footer>
+                <p>Object Oriented Programming using Java.</p>
 
-        <p>
-            © 2026 Student Portal. All Rights Reserved.
-        </p>
+                <span>Credits : 3</span>
 
-    </footer>
+            </article>
+
+            <article class="course-card">
+
+                <h3>Machine Learning</h3>
+
+                <p>Introduction to AI and Machine Learning.</p>
+
+                <span>Credits : 4</span>
+
+            </article>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+
+    <p>© 2026 Student Portal</p>
+
+</footer>
 
 </body>
-
 </html>

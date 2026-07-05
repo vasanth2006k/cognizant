@@ -1,4 +1,4 @@
-/* CSS Reset */
+/* Reset */
 
 *{
     margin:0;
@@ -12,11 +12,9 @@ body{
 
     font-family:Arial, Helvetica, sans-serif;
 
-    background:#f4f6f8;
+    background:#f5f5f5;
 
     color:#333;
-
-    line-height:1.6;
 
 }
 
@@ -24,7 +22,7 @@ body{
 
 header{
 
-    background:#1e3a8a;
+    background:#0d6efd;
 
     color:white;
 
@@ -42,31 +40,21 @@ header{
 
 nav ul{
 
+    display:flex;
+
+    gap:25px;
+
     list-style:none;
 
 }
 
-nav ul li{
-
-    display:inline-block;
-
-    margin-left:20px;
-
-}
-
-nav ul li a{
-
-    text-decoration:none;
+nav a{
 
     color:white;
 
+    text-decoration:none;
+
     font-weight:bold;
-
-}
-
-nav ul li a:hover{
-
-    color:yellow;
 
 }
 
@@ -74,17 +62,27 @@ nav ul li a:hover{
 
 #hero{
 
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
     text-align:center;
 
-    padding:80px 20px;
+    min-height:40vh;
+
+    padding:40px;
 
     background:white;
 
 }
 
-#hero h1{
+#hero h2{
 
-    font-size:40px;
+    font-size:clamp(1.5rem,3vw,2.5rem);
 
     margin-bottom:20px;
 
@@ -92,25 +90,21 @@ nav ul li a:hover{
 
 #hero p{
 
-    margin-bottom:25px;
-
-    font-size:18px;
+    margin-bottom:20px;
 
 }
 
 button{
 
-    padding:12px 25px;
+    padding:12px 30px;
+
+    background:#0d6efd;
+
+    color:white;
 
     border:none;
 
     border-radius:6px;
-
-    background:#2563eb;
-
-    color:white;
-
-    font-size:16px;
 
     cursor:pointer;
 
@@ -118,7 +112,37 @@ button{
 
 button:hover{
 
-    background:#1d4ed8;
+    background:#084298;
+
+}
+
+/* Stats */
+
+.stats{
+
+    display:flex;
+
+    justify-content:space-evenly;
+
+    gap:20px;
+
+    padding:30px;
+
+}
+
+.stat-box{
+
+    flex:1;
+
+    background:white;
+
+    text-align:center;
+
+    padding:20px;
+
+    border-radius:10px;
+
+    box-shadow:0 2px 6px rgba(0,0,0,.2);
 
 }
 
@@ -138,25 +162,37 @@ button:hover{
 
 }
 
+/* CSS Grid */
+
+.course-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr;
+
+    gap:20px;
+
+}
+
 .course-card{
 
     background:white;
 
-    border:1px solid #ddd;
+    padding:20px;
 
     border-radius:10px;
 
-    padding:20px;
+    box-shadow:0 4px 8px rgba(0,0,0,.2);
 
-    margin-bottom:20px;
+    min-height:180px;
 
-    box-shadow:0px 4px 8px rgba(0,0,0,0.15);
+    align-self:stretch;
 
 }
 
 .course-card h3{
 
-    color:#2563eb;
+    color:#0d6efd;
 
     margin-bottom:10px;
 
@@ -168,17 +204,13 @@ button:hover{
 
 }
 
-.course-card span{
-
-    font-weight:bold;
-
-}
-
 /* Footer */
 
 footer{
 
-    background:#1e3a8a;
+    margin-top:40px;
+
+    background:#0d6efd;
 
     color:white;
 
@@ -186,6 +218,34 @@ footer{
 
     padding:20px;
 
-    margin-top:40px;
+}
+
+/* Tablet */
+
+@media(min-width:768px){
+
+    .course-grid{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+}
+
+/* Desktop */
+
+@media(min-width:1024px){
+
+    .course-grid{
+
+        grid-template-columns:repeat(3,1fr);
+
+    }
+
+    #hero{
+
+        padding:80px;
+
+    }
 
 }
