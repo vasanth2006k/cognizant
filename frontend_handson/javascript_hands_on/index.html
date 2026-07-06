@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Portal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+    <h1>Student Portal</h1>
+
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">Courses</a>
+        <a href="#">Grades</a>
+        <a href="#">Profile</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <h2>Welcome Student</h2>
+    <p>Browse your enrolled courses.</p>
+</section>
+
+<div class="controls">
+
+    <input
+        type="text"
+        id="search-courses"
+        placeholder="Search courses..."
+    >
+
+    <button id="sortBtn">
+        Sort By Credits
+    </button>
+
+</div>
+
+<section>
+
+    <div class="course-grid">
+
+    </div>
+
+    <p id="total-credits"></p>
+
+    <div id="selected-course"></div>
+
+</section>
+
+<script type="module" src="app.js"></script>
+
+</body>
+</html>
