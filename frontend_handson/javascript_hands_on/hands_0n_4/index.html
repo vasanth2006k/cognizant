@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Portal</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</head>
+
+<body>
+
+    <header>
+
+        <h1>Student Portal</h1>
+
+        <nav>
+
+            <a href="#">Home</a>
+            <a href="#">Courses</a>
+            <a href="#">Grades</a>
+            <a href="#">Profile</a>
+
+        </nav>
+
+    </header>
+
+    <!-- Hero -->
+
+    <section class="hero">
+
+        <h2>Welcome Student</h2>
+
+        <p>
+            Explore your courses and notifications.
+        </p>
+
+    </section>
+
+    <!-- Search and Sort -->
+
+    <section class="controls">
+
+        <input
+            type="text"
+            id="search-courses"
+            placeholder="Search Courses..."
+        >
+
+        <button id="sortBtn">
+            Sort by Credits
+        </button>
+
+    </section>
+
+    <!-- Loading -->
+
+    <h3 id="loading"></h3>
+
+    <!-- Error -->
+
+    <h3 id="error"></h3>
+
+    <div style="text-align:center">
+
+        <button
+            id="retryBtn"
+            style="display:none;"
+        >
+            Retry
+        </button>
+
+    </div>
+
+    <!-- Course Cards -->
+
+    <section>
+
+        <div class="course-grid">
+
+        </div>
+
+    </section>
+
+    <!-- Total Credits -->
+
+    <h2 id="total-credits"></h2>
+
+    <!-- Selected Course -->
+
+    <div id="selected-course">
+
+    </div>
+
+    <hr>
+
+    <!-- Notifications -->
+
+    <section>
+
+        <h2 style="text-align:center">
+            Notifications
+        </h2>
+
+        <div id="notifications">
+
+        </div>
+
+    </section>
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
