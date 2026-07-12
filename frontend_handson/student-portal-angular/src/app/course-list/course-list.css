@@ -1,0 +1,23 @@
+h2{
+    color:#1976d2;
+}
+
+input{
+
+    width:300px;
+
+    padding:10px;
+
+    border-radius:6px;
+
+    border:1px solid #ccc;
+
+    margin-bottom:20px;
+
+}
+
+app-course-card{
+
+    display:inline-block;
+
+} 
