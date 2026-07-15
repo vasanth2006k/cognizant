@@ -9,9 +9,9 @@ import { RouterView } from 'vue-router'
 </script>
 
 <style>
-body {
-  margin: 0;
-  background: #f4f6f9;
-  font-family: Arial, Helvetica, sans-serif;
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#f4f6f9;
 }
 </style>

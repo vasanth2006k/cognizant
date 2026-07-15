@@ -4,7 +4,9 @@
 
     <nav>
       <RouterLink to="/">Home</RouterLink>
+
       <RouterLink to="/courses">Courses</RouterLink>
+
       <RouterLink to="/profile">
         Profile ({{ store.enrolledCount }})
       </RouterLink>
@@ -23,10 +25,10 @@ const store = useEnrollmentStore()
 .header{
     background:#1976d2;
     color:white;
-    padding:18px;
     display:flex;
     justify-content:space-between;
     align-items:center;
+    padding:15px 30px;
 }
 
 nav{
@@ -41,6 +43,6 @@ a{
 }
 
 a.router-link-active{
-    text-decoration:underline;
+    color:yellow;
 }
 </style>

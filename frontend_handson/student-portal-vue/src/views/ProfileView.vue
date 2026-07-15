@@ -1,24 +1,26 @@
 <template>
   <div class="container">
 
-    <h2>My Profile</h2>
+    <h1>My Profile</h1>
 
-    <h3>Enrolled Courses</h3>
+    <div v-if="store.enrolledCourses.length === 0">
+      <p>No courses enrolled yet.</p>
+    </div>
 
     <div
-      class="card"
       v-for="course in store.enrolledCourses"
       :key="course.id"
+      class="card"
     >
-      <h3>{{ course.name }}</h3>
+      <h2>{{ course.name }}</h2>
 
-      <p>{{ course.code }}</p>
+      <p><strong>Course Code:</strong> {{ course.code }}</p>
 
-      <p>Credits : {{ course.credits }}</p>
+      <p><strong>Credits:</strong> {{ course.credits }}</p>
 
-      <button
-        @click="store.unenroll(course.id)"
-      >
+      <p><strong>Grade:</strong> {{ course.grade }}</p>
+
+      <button @click="store.unenroll(course.id)">
         Unenroll
       </button>
     </div>
@@ -33,3 +35,19 @@ import { useEnrollmentStore } from '../stores/enrollment'
 
 const store = useEnrollmentStore()
 </script>
+
+<style scoped>
+h1{
+    text-align:center;
+    color:#1976d2;
+    margin-bottom:20px;
+}
+
+.card{
+    margin-bottom:20px;
+}
+
+button{
+    margin-top:10px;
+}
+</style>

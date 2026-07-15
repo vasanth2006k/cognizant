@@ -31,4 +31,10 @@ const router = createRouter({
   ]
 })
 
+// Navigation Guard
+router.beforeEach((to, from, next) => {
+  console.log('Navigating to:', to.path)
+  next()
+})
+
 export default router

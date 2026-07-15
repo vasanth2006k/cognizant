@@ -6,35 +6,58 @@
 }
 
 body{
-    background:#eef2f7;
+    background:#f4f6f9;
 }
 
 .container{
     width:90%;
     margin:auto;
-    padding:30px;
+    padding:20px;
+}
+
+.header{
+    background:#1976d2;
+    color:white;
+    padding:15px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.header nav{
+    display:flex;
+    gap:20px;
+}
+
+.header a{
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.header a.router-link-active{
+    color:yellow;
 }
 
 .card{
     background:white;
-    padding:20px;
     margin:20px 0;
+    padding:20px;
     border-radius:10px;
-    box-shadow:0 3px 8px rgba(0,0,0,.15);
+    box-shadow:0 0 10px rgba(0,0,0,.15);
 }
 
 button{
     padding:10px 20px;
-    border:none;
     background:#1976d2;
     color:white;
+    border:none;
+    border-radius:5px;
     cursor:pointer;
-    border-radius:6px;
-    margin-top:15px;
 }
 
 button:hover{
-    background:#125ea8;
+    background:#0d47a1;
 }
 
 input{

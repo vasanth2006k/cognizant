@@ -30,39 +30,39 @@ const store = useEnrollmentStore()
 
 const courses = [
   {
-    id:1,
-    code:'CS101',
-    name:'Programming Fundamentals',
-    credits:4,
-    grade:'A'
+    id: 1,
+    code: 'CS101',
+    name: 'Programming Fundamentals',
+    credits: 4,
+    grade: 'A'
   },
   {
-    id:2,
-    code:'CS102',
-    name:'Data Structures',
-    credits:3,
-    grade:'A'
+    id: 2,
+    code: 'CS102',
+    name: 'Data Structures',
+    credits: 3,
+    grade: 'A'
   },
   {
-    id:3,
-    code:'CS201',
-    name:'Database Management',
-    credits:4,
-    grade:'B+'
+    id: 3,
+    code: 'CS201',
+    name: 'Database Management',
+    credits: 4,
+    grade: 'B+'
   },
   {
-    id:4,
-    code:'CS301',
-    name:'Operating Systems',
-    credits:4,
-    grade:'A-'
+    id: 4,
+    code: 'CS301',
+    name: 'Operating Systems',
+    credits: 4,
+    grade: 'A-'
   },
   {
-    id:5,
-    code:'CS401',
-    name:'Machine Learning',
-    credits:5,
-    grade:'A'
+    id: 5,
+    code: 'CS401',
+    name: 'Machine Learning',
+    credits: 5,
+    grade: 'A'
   }
 ]
 
@@ -75,3 +75,19 @@ function enrollCourse() {
   router.push('/profile')
 }
 </script>
+
+<style scoped>
+.card{
+    max-width:600px;
+    margin:40px auto;
+}
+
+h2{
+    color:#1976d2;
+    margin-bottom:20px;
+}
+
+p{
+    margin:12px 0;
+}
+</style>
